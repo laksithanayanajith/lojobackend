@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace lojobackend.Models
 {
@@ -9,7 +10,7 @@ namespace lojobackend.Models
 
         public string Name { get; set; } = string.Empty;
 
-        public int ColorId { get; set; }
+        public int ItemId { get; set; }
 
         public Item? Item { get; set; }
     }

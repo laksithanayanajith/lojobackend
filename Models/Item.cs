@@ -15,6 +15,8 @@ namespace lojobackend.Models
 
         public string Category { get; set; } = string.Empty;
 
+        public string? DefaultImage { get; set; } = string.Empty;
+
         public SelectedItem? SelectedItem { get; set; }
 
         public DateTime AddedDate { get; set; } = DateTime.Now;

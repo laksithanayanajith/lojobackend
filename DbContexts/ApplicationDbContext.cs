@@ -10,9 +10,10 @@ namespace lojobackend.DbContexts
             
         }
 
-        public DbSet<Item> items { get; set; }
-        public DbSet<Image> images { get; set; }
-        public DbSet<Color> colors { get; set; }
-        public DbSet<lojobackend.Models.SelectedItem> SelectedItem { get; set; } = default!;
+        public DbSet<Item> items { get; set; } = default!;
+        public DbSet<Image> images { get; set; } = default!;
+        public DbSet<Color> colors { get; set; } = default!;
+        public DbSet<SelectedItem> SelectedItem { get; set; } = default!;
+        public DbSet<Size> Size { get; set; } = default!;
     }
 }

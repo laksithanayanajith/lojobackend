@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using lojobackend.DbContexts;
 using lojobackend.Models;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace lojobackend.Controllers
 {
@@ -22,18 +23,25 @@ namespace lojobackend.Controllers
         }
 
         // GET: api/Images/5
-        [HttpGet("image")]
-        public async Task<ActionResult<string>> GetImage([FromQuery]int itemId, [FromQuery]string sizeName, [FromQuery]string colorName)
+        [HttpGet()]
+        public async Task<ActionResult<List<Image>>> GetImage()
         {
-            Item? item = await _context.items.
-                Include(item => item.Colors)
-                .Include(item => item.Images)
-                .Include(item => item.Sizes)
-                .Where(item => item.Sizes.Any(size => size.SizeName.Equals(sizeName)))
-                .Where(item => item.Colors.Any(color => color.Name.Equals(colorName)))
-                .FirstOrDefaultAsync(item => item.Id == itemId);
+            return await _context.images
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
-            return item?.Images?.Select(image => image.url).AsQueryable().FirstOrDefault()!;
+        // GET: api/Images/5
+        [HttpGet("image")]
+        public async Task<ActionResult<string?>> GetImage([FromQuery]int itemId, [FromQuery]int sizeId, [FromQuery]int ColorId)
+        {
+            return await _context.images
+                .Where(image => image.SizeId == sizeId)
+                .Where(image => image.ColorId == ColorId)
+                .Where(image => image.ItemId == itemId)
+                .Select(image => image.url)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
 
         // POST: api/Images

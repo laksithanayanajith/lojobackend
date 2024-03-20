@@ -12,8 +12,8 @@ using lojobackend.DbContexts;
 namespace lojobackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240317063559_size")]
-    partial class size
+    [Migration("20240318075356_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,10 +33,7 @@ namespace lojobackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ItemId")
+                    b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -103,11 +100,60 @@ namespace lojobackend.Migrations
                     b.ToTable("items");
                 });
 
+            modelBuilder.Entity("lojobackend.Models.SelectedItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId")
+                        .IsUnique();
+
+                    b.ToTable("SelectedItem");
+                });
+
+            modelBuilder.Entity("lojobackend.Models.Size", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SizeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("Size");
+                });
+
             modelBuilder.Entity("lojobackend.Models.Color", b =>
                 {
                     b.HasOne("lojobackend.Models.Item", "Item")
                         .WithMany("Colors")
-                        .HasForeignKey("ItemId");
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Item");
                 });
@@ -123,11 +169,37 @@ namespace lojobackend.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("lojobackend.Models.SelectedItem", b =>
+                {
+                    b.HasOne("lojobackend.Models.Item", "Item")
+                        .WithOne("SelectedItem")
+                        .HasForeignKey("lojobackend.Models.SelectedItem", "ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("lojobackend.Models.Size", b =>
+                {
+                    b.HasOne("lojobackend.Models.Item", "Item")
+                        .WithMany("Sizes")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("lojobackend.Models.Item", b =>
                 {
                     b.Navigation("Colors");
 
                     b.Navigation("Images");
+
+                    b.Navigation("SelectedItem");
+
+                    b.Navigation("Sizes");
                 });
 #pragma warning restore 612, 618
         }

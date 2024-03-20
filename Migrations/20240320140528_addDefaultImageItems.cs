@@ -5,7 +5,7 @@
 namespace lojobackend.Migrations
 {
     /// <inheritdoc />
-    public partial class initialsetuplive : Migration
+    public partial class addDefaultImageItems : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

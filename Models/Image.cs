@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using lojobackend.DbContexts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.OpenApi;
@@ -16,5 +17,9 @@ namespace lojobackend.Models
 		public int ItemId { get; set; }
 
 		public Item? Item { get; set; }
+
+		public int ColorId { get; set; }
+
+		public int SizeId { get; set; }
 	}
 }

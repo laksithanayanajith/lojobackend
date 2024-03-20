@@ -30,10 +30,7 @@ namespace lojobackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ItemId")
+                    b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -55,7 +52,13 @@ namespace lojobackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SizeId")
                         .HasColumnType("int");
 
                     b.Property<string>("url")
@@ -151,7 +154,9 @@ namespace lojobackend.Migrations
                 {
                     b.HasOne("lojobackend.Models.Item", "Item")
                         .WithMany("Colors")
-                        .HasForeignKey("ItemId");
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Item");
                 });

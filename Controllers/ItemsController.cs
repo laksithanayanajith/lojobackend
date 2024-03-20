@@ -25,26 +25,72 @@ namespace lojobackend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Item>>> Getitems()
         {
-            return await _context.items.ToListAsync();
+            return await _context.items
+                                    .Select(item => new Item
+                                    {
+                                        Id = item.Id,
+                                        Name = item.Name,
+                                        Description = item.Description,
+                                        Price = item.Price,
+                                        Category = item.Category,
+                                        DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault(),
+                                        AddedDate = item.AddedDate
+                                    })
+                                    .ToArrayAsync();
         }
 
         [HttpGet("prices")]
         public async Task<ActionResult<IEnumerable<Item>>> GetitemsByPrice()
         {
-            return await _context.items.OrderBy(item => item.Price).ToListAsync();
+            return await _context.items
+                                    .Select(item => new Item
+                                    {
+                                        Id = item.Id,
+                                        Name = item.Name,
+                                        Description = item.Description,
+                                        Price = item.Price,
+                                        Category = item.Category,
+                                        DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault(),
+                                        AddedDate = item.AddedDate
+                                    })
+                                    .OrderBy(item => item.Price)
+                                    .ToArrayAsync();
         }
 
         [HttpGet("date")]
         public async Task<ActionResult<IEnumerable<Item>>> GetitemsByDate()
         {
-            return await _context.items.OrderByDescending(item => item.AddedDate).ToListAsync();
+            return await _context.items
+                                    .Select(item => new Item
+                                    {
+                                        Id = item.Id,
+                                        Name = item.Name,
+                                        Description = item.Description,
+                                        Price = item.Price,
+                                        Category = item.Category,
+                                        DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault(),
+                                        AddedDate = item.AddedDate
+                                    })
+                                    .OrderByDescending(item => item.AddedDate)
+                                    .ToArrayAsync();
         }
 
         // GET: api/Items/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Item>> GetItem(int id)
         {
-            var item = await _context.items.FindAsync(id);
+            var item = await _context.items
+                .Select(item => new Item
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    Price = item.Price,
+                    Category = item.Category,
+                    AddedDate = item.AddedDate,
+                    DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault()
+                })
+                .FirstOrDefaultAsync(item => item.Id == id);
 
             if (item == null)
             {
@@ -54,31 +100,70 @@ namespace lojobackend.Controllers
             return item;
         }
 
+
         [HttpGet("filter/price")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItemsByPrice([FromQuery] int stack)
         {
-            List<Item> item;
+            var itemsWithImages = await _context.items
+                        .Select(item => new Item
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                            Description = item.Description,
+                            Price = item.Price,
+                            Category = item.Category,
+                            DefaultImage = _context.images
+                                .Where(image => image.ItemId == item.Id)
+                                .Select(image => image.url)
+                                .FirstOrDefault(),
+                            AddedDate = item.AddedDate
+                        })
+                        .Where(item =>
+                            stack == 1 ? item.Price <= 155.00 :
+                            stack == 2 ? item.Price > 155.00 && item.Price <= 160.00 :
+                            stack == 3 ? item.Price > 161.00 && item.Price <= 185.00 :
+                            item.Price > 190.00
+                        )
+                        .ToArrayAsync();
 
-            return item = stack switch
-            {
-                1 => await _context.items.Where(item => item.Price <= 10.00).ToListAsync(),
-                2 => await _context.items.Where(item => item.Price > 10.00 && item.Price <= 20.00).ToListAsync(),
-                3 => await _context.items.Where(item => item.Price > 20.00 && item.Price <= 40.00).ToListAsync(),
-                4 => await _context.items.Where(item => item.Price > 40.00).ToListAsync(),
-                _ => await _context.items.ToListAsync()
-            };
+            return itemsWithImages;
+
         }
 
         [HttpGet("filter/category")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItemsByCategory([FromQuery] string category)
         {
-            return await _context.items.Where(item => item.Category.Contains(category)).ToListAsync();
+            return await _context.items
+                                    .Select(item => new Item
+                                    {
+                                        Id = item.Id,
+                                        Name = item.Name,
+                                        Description = item.Description,
+                                        Price = item.Price,
+                                        Category = item.Category,
+                                        DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault(),
+                                        AddedDate = item.AddedDate
+                                    })
+                                    .Where(item => item.Category.Contains(category))
+                                    .ToArrayAsync();
         }
 
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<Item>>> GetItemsByName([FromQuery] string name)
         {
-            return await _context.items.Where(item => EF.Functions.Like(item.Name, $"%{name.ToLower()}%")).ToListAsync();
+            return await _context.items
+                .Where(item => EF.Functions.Like(item.Name, $"%{name.ToLower()}%"))
+                .Select(item => new Item
+                {
+                    Id = item.Id,
+                    Name = item.Name,
+                    Description = item.Description,
+                    Price = item.Price,
+                    Category = item.Category,
+                    DefaultImage = _context.images.Where(image => image.ItemId == item.Id).Select(image => image.url).FirstOrDefault(),
+                    AddedDate = item.AddedDate
+                })
+                .ToListAsync();
         }
 
         // PUT: api/Items/5
